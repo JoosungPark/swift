@@ -1,0 +1,631 @@
+sil_stage canonical
+
+import Builtin
+import Swift
+import SwiftShims
+
+func fetchUser() async -> String
+
+func fetchPosts() async -> [String]
+
+func fetchAll() async -> (String, [String])
+
+struct Counter : AsyncSequence {
+  typealias Element = Int
+  @_hasStorage let limit: Int { get }
+  struct AsyncIterator : AsyncIteratorProtocol {
+    @_hasStorage @_hasInitialValue var current: Int { get set }
+    @_hasStorage let limit: Int { get }
+    mutating func next() async -> Int?
+    typealias Element = Int
+    @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+    @_implements(AsyncIteratorProtocol, Failure) typealias __AsyncIteratorProtocol_Failure = Never
+    init(current: Int = 0, limit: Int)
+  }
+  func makeAsyncIterator() -> Counter.AsyncIterator
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(AsyncSequence, Failure) typealias __AsyncSequence_Failure = Never
+  init(limit: Int)
+}
+
+func processSequence() async
+
+// main
+// Isolation: unspecified
+sil @main : $@convention(c) (Int32, UnsafeMutablePointer<Optional<UnsafeMutablePointer<Int8>>>) -> Int32 {
+bb0(%0 : $Int32, %1 : $UnsafeMutablePointer<Optional<UnsafeMutablePointer<Int8>>>):
+  %2 = integer_literal $Builtin.Int32, 0          // user: %3
+  %3 = struct $Int32 (%2)                         // user: %4
+  return %3                                       // id: %4
+} // end sil function 'main'
+
+// fetchUser()
+// Isolation: unspecified
+sil hidden @$s16async_let_sample9fetchUserSSyYaF : $@convention(thin) @async () -> @owned String {
+bb0:
+  %0 = enum $Optional<Builtin.Executor>, #Optional.none!enumelt // user: %1
+  hop_to_executor %0                              // id: %1
+  %2 = string_literal utf8 "User"                 // user: %7
+  %3 = integer_literal $Builtin.Word, 4           // user: %7
+  %4 = integer_literal $Builtin.Int1, -1          // user: %7
+  %5 = metatype $@thin String.Type                // user: %7
+  // function_ref String.init(_builtinStringLiteral:utf8CodeUnitCount:isASCII:)
+  %6 = function_ref @$sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %7
+  %7 = apply %6(%2, %3, %4, %5) : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %8
+  return %7                                       // id: %8
+} // end sil function '$s16async_let_sample9fetchUserSSyYaF'
+
+// String.init(_builtinStringLiteral:utf8CodeUnitCount:isASCII:)
+// Isolation: unspecified
+sil [always_inline] [readonly] [_semantics "string.makeUTF8"] @$sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String
+
+// fetchPosts()
+// Isolation: unspecified
+sil hidden @$s16async_let_sample10fetchPostsSaySSGyYaF : $@convention(thin) @async () -> @owned Array<String> {
+bb0:
+  %0 = enum $Optional<Builtin.Executor>, #Optional.none!enumelt // user: %1
+  hop_to_executor %0                              // id: %1
+  %2 = integer_literal $Builtin.Word, 2           // user: %4
+  // function_ref _allocateUninitializedArray<A>(_:)
+  %3 = function_ref @$ss27_allocateUninitializedArrayySayxG_BptBwlF : $@convention(thin) <τ_0_0> (Builtin.Word) -> (@owned Array<τ_0_0>, Builtin.RawPointer) // user: %4
+  %4 = apply %3<String>(%2) : $@convention(thin) <τ_0_0> (Builtin.Word) -> (@owned Array<τ_0_0>, Builtin.RawPointer) // users: %6, %5
+  %5 = tuple_extract %4, 0                        // users: %7, %26
+  %6 = tuple_extract %4, 1                        // user: %7
+  %7 = mark_dependence %6 on %5                   // user: %8
+  %8 = pointer_to_address %7 to [strict] $*String // users: %15, %17
+  %9 = string_literal utf8 "Post1"                // user: %14
+  %10 = integer_literal $Builtin.Word, 5          // user: %14
+  %11 = integer_literal $Builtin.Int1, -1         // user: %14
+  %12 = metatype $@thin String.Type               // user: %14
+  // function_ref String.init(_builtinStringLiteral:utf8CodeUnitCount:isASCII:)
+  %13 = function_ref @$sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %14
+  %14 = apply %13(%9, %10, %11, %12) : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %15
+  store %14 to %8                                 // id: %15
+  %16 = integer_literal $Builtin.Word, 1          // user: %17
+  %17 = index_addr %8, %16                        // user: %24
+  %18 = string_literal utf8 "Post2"               // user: %23
+  %19 = integer_literal $Builtin.Word, 5          // user: %23
+  %20 = integer_literal $Builtin.Int1, -1         // user: %23
+  %21 = metatype $@thin String.Type               // user: %23
+  // function_ref String.init(_builtinStringLiteral:utf8CodeUnitCount:isASCII:)
+  %22 = function_ref @$sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %23
+  %23 = apply %22(%18, %19, %20, %21) : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %24
+  store %23 to %17                                // id: %24
+  // function_ref _finalizeUninitializedArray<A>(_:)
+  %25 = function_ref @$ss27_finalizeUninitializedArrayySayxGABnlF : $@convention(thin) <τ_0_0> (@owned Array<τ_0_0>) -> @owned Array<τ_0_0> // user: %26
+  %26 = apply %25<String>(%5) : $@convention(thin) <τ_0_0> (@owned Array<τ_0_0>) -> @owned Array<τ_0_0> // user: %27
+  return %26                                      // id: %27
+} // end sil function '$s16async_let_sample10fetchPostsSaySSGyYaF'
+
+// _allocateUninitializedArray<A>(_:)
+// Isolation: unspecified
+sil [always_inline] [_semantics "array.uninitialized_intrinsic"] @$ss27_allocateUninitializedArrayySayxG_BptBwlF : $@convention(thin) <Element> (Builtin.Word) -> (@owned Array<Element>, Builtin.RawPointer)
+
+// _finalizeUninitializedArray<A>(_:)
+// Isolation: unspecified
+sil shared [readnone] [_semantics "array.finalize_intrinsic"] @$ss27_finalizeUninitializedArrayySayxGABnlF : $@convention(thin) <Element> (@owned Array<Element>) -> @owned Array<Element> {
+[%0: escape! v** => %r.v**, escape! v**.c*.v** => %r.v**.c*.v**]
+// %0                                             // user: %2
+bb0(%0 : $Array<Element>):
+  %1 = alloc_stack [var_decl] $Array<Element>     // users: %5, %2, %6, %4
+  store %0 to %1                                  // id: %2
+  // function_ref Array._endMutation()
+  %3 = function_ref @$sSa12_endMutationyyF : $@convention(method) <τ_0_0> (@inout Array<τ_0_0>) -> () // user: %4
+  %4 = apply %3<Element>(%1) : $@convention(method) <τ_0_0> (@inout Array<τ_0_0>) -> ()
+  %5 = load %1                                    // user: %7
+  dealloc_stack %1                                // id: %6
+  return %5                                       // id: %7
+} // end sil function '$ss27_finalizeUninitializedArrayySayxGABnlF'
+
+// fetchAll()
+// Isolation: unspecified
+sil hidden @$s16async_let_sample8fetchAllSS_SaySSGtyYaF : $@convention(thin) @async () -> (@owned String, @owned Array<String>) {
+bb0:
+  %0 = enum $Optional<Builtin.Executor>, #Optional.none!enumelt // users: %31, %26, %1
+  hop_to_executor %0                              // id: %1
+  %2 = alloc_stack $String                        // users: %18, %33, %3
+  %3 = address_to_pointer %2 to $Builtin.RawPointer // users: %30, %17, %8
+  %4 = enum $Optional<Builtin.RawPointer>, #Optional.none!enumelt // user: %8
+  // function_ref implicit closure #1 in fetchAll()
+  %5 = function_ref @$s16async_let_sample8fetchAllSS_SaySSGtyYaFSSyYaYbcfu_ : $@convention(thin) @Sendable @async @substituted <τ_0_0> () -> (@out τ_0_0, @error any Error) for <String> // user: %6
+  %6 = convert_function %5 to $@convention(thin) @async @substituted <τ_0_0> () -> (@out τ_0_0, @error any Error) for <String> // user: %7
+  %7 = thin_to_thick_function %6 to $@noescape @async @callee_guaranteed @substituted <τ_0_0> () -> (@out τ_0_0, @error any Error) for <String> // user: %8
+  %8 = builtin "startAsyncLetWithLocalBuffer"<String>(%4, %7, %3) : $Builtin.RawPointer // users: %32, %30, %17
+  %9 = alloc_stack $Array<String>                 // users: %22, %28, %10
+  %10 = address_to_pointer %9 to $Builtin.RawPointer // users: %25, %21, %15
+  %11 = enum $Optional<Builtin.RawPointer>, #Optional.none!enumelt // user: %15
+  // function_ref implicit closure #2 in fetchAll()
+  %12 = function_ref @$s16async_let_sample8fetchAllSS_SaySSGtyYaFACyYaYbcfu0_ : $@convention(thin) @Sendable @async @substituted <τ_0_0> () -> (@out τ_0_0, @error any Error) for <Array<String>> // user: %13
+  %13 = convert_function %12 to $@convention(thin) @async @substituted <τ_0_0> () -> (@out τ_0_0, @error any Error) for <Array<String>> // user: %14
+  %14 = thin_to_thick_function %13 to $@noescape @async @callee_guaranteed @substituted <τ_0_0> () -> (@out τ_0_0, @error any Error) for <Array<String>> // user: %15
+  %15 = builtin "startAsyncLetWithLocalBuffer"<[String]>(%11, %14, %10) : $Builtin.RawPointer // users: %27, %25, %21
+  // function_ref swift_asyncLet_get
+  %16 = function_ref @swift_asyncLet_get : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> () // user: %17
+  %17 = apply %16(%8, %3) : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> ()
+  %18 = load %2                                   // users: %34, %19
+  retain_value %18                                // id: %19
+  // function_ref swift_asyncLet_get
+  %20 = function_ref @swift_asyncLet_get : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> () // user: %21
+  %21 = apply %20(%15, %10) : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> ()
+  %22 = load %9                                   // users: %34, %23
+  retain_value %22                                // id: %23
+  // function_ref swift_asyncLet_finish
+  %24 = function_ref @swift_asyncLet_finish : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> () // user: %25
+  %25 = apply %24(%15, %10) : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> ()
+  hop_to_executor %0                              // id: %26
+  %27 = builtin "endAsyncLetLifetime"(%15) : $()
+  dealloc_stack %9                                // id: %28
+  // function_ref swift_asyncLet_finish
+  %29 = function_ref @swift_asyncLet_finish : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> () // user: %30
+  %30 = apply %29(%8, %3) : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> ()
+  hop_to_executor %0                              // id: %31
+  %32 = builtin "endAsyncLetLifetime"(%8) : $()
+  dealloc_stack %2                                // id: %33
+  %34 = tuple (%18, %22)                          // user: %35
+  return %34                                      // id: %35
+} // end sil function '$s16async_let_sample8fetchAllSS_SaySSGtyYaF'
+
+// implicit closure #1 in fetchAll()
+// Isolation: nonisolated
+sil private @$s16async_let_sample8fetchAllSS_SaySSGtyYaFSSyYaYbcfu_ : $@convention(thin) @Sendable @async @substituted <τ_0_0> () -> (@out τ_0_0, @error any Error) for <String> {
+// %0 "$return_value"                             // user: %6
+bb0(%0 : $*String):
+  debug_value undef : $any Error, var, name "$error", argno 1 // id: %1
+  %2 = enum $Optional<Builtin.Executor>, #Optional.none!enumelt // user: %5
+  // function_ref fetchUser()
+  %3 = function_ref @$s16async_let_sample9fetchUserSSyYaF : $@convention(thin) @async () -> @owned String // user: %4
+  %4 = apply %3() : $@convention(thin) @async () -> @owned String // user: %6
+  hop_to_executor %2                              // id: %5
+  store %4 to %0                                  // id: %6
+  %7 = tuple ()                                   // user: %8
+  return %7                                       // id: %8
+} // end sil function '$s16async_let_sample8fetchAllSS_SaySSGtyYaFSSyYaYbcfu_'
+
+// implicit closure #2 in fetchAll()
+// Isolation: nonisolated
+sil private @$s16async_let_sample8fetchAllSS_SaySSGtyYaFACyYaYbcfu0_ : $@convention(thin) @Sendable @async @substituted <τ_0_0> () -> (@out τ_0_0, @error any Error) for <Array<String>> {
+// %0 "$return_value"                             // user: %6
+bb0(%0 : $*Array<String>):
+  debug_value undef : $any Error, var, name "$error", argno 1 // id: %1
+  %2 = enum $Optional<Builtin.Executor>, #Optional.none!enumelt // user: %5
+  // function_ref fetchPosts()
+  %3 = function_ref @$s16async_let_sample10fetchPostsSaySSGyYaF : $@convention(thin) @async () -> @owned Array<String> // user: %4
+  %4 = apply %3() : $@convention(thin) @async () -> @owned Array<String> // user: %6
+  hop_to_executor %2                              // id: %5
+  store %4 to %0                                  // id: %6
+  %7 = tuple ()                                   // user: %8
+  return %7                                       // id: %8
+} // end sil function '$s16async_let_sample8fetchAllSS_SaySSGtyYaFACyYaYbcfu0_'
+
+// swift_asyncLet_get
+// Isolation: unspecified
+sil [available 12.0.0] @swift_asyncLet_get : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> ()
+
+// swift_asyncLet_finish
+// Isolation: unspecified
+sil [available 12.0.0] @swift_asyncLet_finish : $@convention(thin) @async (Builtin.RawPointer, Builtin.RawPointer) -> ()
+
+// Counter.limit.getter
+// Isolation: unspecified
+sil hidden [transparent] @$s16async_let_sample7CounterV5limitSivg : $@convention(method) (Counter) -> Int {
+// %0 "self"                                      // users: %2, %1
+bb0(%0 : $Counter):
+  debug_value %0, let, name "self", argno 1       // id: %1
+  %2 = struct_extract %0, #Counter.limit          // user: %3
+  return %2                                       // id: %3
+} // end sil function '$s16async_let_sample7CounterV5limitSivg'
+
+// variable initialization expression of Counter.AsyncIterator.current
+// Isolation: unspecified
+sil hidden [transparent] @$s16async_let_sample7CounterV13AsyncIteratorV7currentSivpfi : $@convention(thin) () -> Int {
+bb0:
+  %0 = integer_literal $Builtin.Int64, 0          // user: %1
+  %1 = struct $Int (%0)                           // user: %2
+  return %1                                       // id: %2
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorV7currentSivpfi'
+
+// Int.init(_builtinIntegerLiteral:)
+// Isolation: unspecified
+sil public_external [transparent] @$sSi22_builtinIntegerLiteralSiBI_tcfC : $@convention(method) (Builtin.IntLiteral, @thin Int.Type) -> Int {
+// %0                                             // user: %2
+bb0(%0 : $Builtin.IntLiteral, %1 : $@thin Int.Type):
+  %2 = builtin "s_to_s_checked_trunc_IntLiteral_Int64"(%0) : $(Builtin.Int64, Builtin.Int1) // user: %3
+  %3 = tuple_extract %2, 0                        // user: %4
+  %4 = struct $Int (%3)                           // user: %5
+  return %4                                       // id: %5
+} // end sil function '$sSi22_builtinIntegerLiteralSiBI_tcfC'
+
+// Counter.AsyncIterator.current.getter
+// Isolation: unspecified
+sil hidden [transparent] @$s16async_let_sample7CounterV13AsyncIteratorV7currentSivg : $@convention(method) (Counter.AsyncIterator) -> Int {
+// %0 "self"                                      // users: %2, %1
+bb0(%0 : $Counter.AsyncIterator):
+  debug_value %0, let, name "self", argno 1       // id: %1
+  %2 = struct_extract %0, #Counter.AsyncIterator.current // user: %3
+  return %2                                       // id: %3
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorV7currentSivg'
+
+// Counter.AsyncIterator.current.setter
+// Isolation: unspecified
+sil hidden [transparent] @$s16async_let_sample7CounterV13AsyncIteratorV7currentSivs : $@convention(method) (Int, @inout Counter.AsyncIterator) -> () {
+// %0 "value"                                     // users: %6, %2
+// %1 "self"                                      // users: %4, %3
+bb0(%0 : $Int, %1 : $*Counter.AsyncIterator):
+  debug_value %0, let, name "value", argno 1      // id: %2
+  debug_value %1, var, name "self", argno 2, expr op_deref // id: %3
+  %4 = begin_access [modify] [static] %1          // users: %7, %5
+  %5 = struct_element_addr %4, #Counter.AsyncIterator.current // user: %6
+  store %0 to %5                                  // id: %6
+  end_access %4                                   // id: %7
+  %8 = tuple ()                                   // user: %9
+  return %8                                       // id: %9
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorV7currentSivs'
+
+// Counter.AsyncIterator.current.modify
+// Isolation: unspecified
+sil hidden [transparent] @$s16async_let_sample7CounterV13AsyncIteratorV7currentSivM : $@yield_once @convention(method) (@inout Counter.AsyncIterator) -> @yields @inout Int {
+// %0 "self"                                      // users: %2, %1
+bb0(%0 : $*Counter.AsyncIterator):
+  debug_value %0, var, name "self", argno 1, expr op_deref // id: %1
+  %2 = begin_access [modify] [static] %0          // users: %5, %8, %3
+  %3 = struct_element_addr %2, #Counter.AsyncIterator.current // user: %4
+  yield %3, resume bb1, unwind bb2                // id: %4
+
+bb1:                                              // Preds: bb0
+  end_access %2                                   // id: %5
+  %6 = tuple ()                                   // user: %7
+  return %6                                       // id: %7
+
+bb2:                                              // Preds: bb0
+  end_access %2                                   // id: %8
+  unwind                                          // id: %9
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorV7currentSivM'
+
+// Counter.AsyncIterator.limit.getter
+// Isolation: unspecified
+sil hidden [transparent] @$s16async_let_sample7CounterV13AsyncIteratorV5limitSivg : $@convention(method) (Counter.AsyncIterator) -> Int {
+// %0 "self"                                      // users: %2, %1
+bb0(%0 : $Counter.AsyncIterator):
+  debug_value %0, let, name "self", argno 1       // id: %1
+  %2 = struct_extract %0, #Counter.AsyncIterator.limit // user: %3
+  return %2                                       // id: %3
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorV5limitSivg'
+
+// Counter.AsyncIterator.next()
+// Isolation: unspecified
+sil hidden @$s16async_let_sample7CounterV13AsyncIteratorV4nextSiSgyYaF : $@convention(method) @async (@inout Counter.AsyncIterator) -> Optional<Int> {
+// %0 "self"                                      // users: %29, %17, %8, %4, %1
+bb0(%0 : $*Counter.AsyncIterator):
+  debug_value %0, var, name "self", argno 1, expr op_deref // id: %1
+  %2 = enum $Optional<Builtin.Executor>, #Optional.none!enumelt // user: %3
+  hop_to_executor %2                              // id: %3
+  %4 = begin_access [read] [static] %0            // users: %7, %5
+  %5 = struct_element_addr %4, #Counter.AsyncIterator.current // user: %6
+  %6 = load %5                                    // user: %12
+  end_access %4                                   // id: %7
+  %8 = begin_access [read] [static] %0            // users: %9, %11
+  %9 = struct_element_addr %8, #Counter.AsyncIterator.limit // user: %10
+  %10 = load %9                                   // user: %13
+  end_access %8                                   // id: %11
+  %12 = struct_extract %6, #Int._value            // user: %14
+  %13 = struct_extract %10, #Int._value           // user: %14
+  %14 = builtin "cmp_slt_Int64"(%12, %13) : $Builtin.Int1 // user: %15
+  cond_br %14, bb1, bb2                           // id: %15
+
+bb1:                                              // Preds: bb0
+  %16 = integer_literal $Builtin.Int64, 1         // user: %22
+  %17 = begin_access [modify] [static] %0         // users: %28, %18
+  %18 = struct_element_addr %17, #Counter.AsyncIterator.current // users: %27, %19
+  %19 = struct_element_addr %18, #Int._value      // user: %20
+  %20 = load %19                                  // user: %22
+  %21 = integer_literal $Builtin.Int1, -1         // user: %22
+  %22 = builtin "sadd_with_overflow_Int64"(%20, %16, %21) : $(Builtin.Int64, Builtin.Int1) // users: %24, %23
+  %23 = tuple_extract %22, 0                      // user: %26
+  %24 = tuple_extract %22, 1                      // user: %25
+  cond_fail %24, "arithmetic overflow"            // id: %25
+  %26 = struct $Int (%23)                         // user: %27
+  store %26 to %18                                // id: %27
+  end_access %17                                  // id: %28
+  %29 = begin_access [read] [static] %0           // users: %32, %30
+  %30 = struct_element_addr %29, #Counter.AsyncIterator.current // user: %31
+  %31 = load %30                                  // user: %33
+  end_access %29                                  // id: %32
+  %33 = enum $Optional<Int>, #Optional.some!enumelt, %31 // user: %34
+  br bb3(%33)                                     // id: %34
+
+bb2:                                              // Preds: bb0
+  %35 = enum $Optional<Int>, #Optional.none!enumelt // user: %36
+  br bb3(%35)                                     // id: %36
+
+// %37                                            // user: %38
+bb3(%37 : $Optional<Int>):                        // Preds: bb1 bb2
+  return %37                                      // id: %38
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorV4nextSiSgyYaF'
+
+// static Int.< infix(_:_:)
+// Isolation: unspecified
+sil public_external [transparent] @$sSi1loiySbSi_SitFZ : $@convention(method) (Int, Int, @thin Int.Type) -> Bool {
+// %0                                             // user: %3
+// %1                                             // user: %4
+bb0(%0 : $Int, %1 : $Int, %2 : $@thin Int.Type):
+  %3 = struct_extract %0, #Int._value             // user: %5
+  %4 = struct_extract %1, #Int._value             // user: %5
+  %5 = builtin "cmp_slt_Int64"(%3, %4) : $Builtin.Int1 // user: %6
+  %6 = struct $Bool (%5)                          // user: %7
+  return %6                                       // id: %7
+} // end sil function '$sSi1loiySbSi_SitFZ'
+
+// static Int.+= infix(_:_:)
+// Isolation: unspecified
+sil public_external [transparent] @$sSi2peoiyySiz_SitFZ : $@convention(method) (@inout Int, Int, @thin Int.Type) -> () {
+// %0                                             // users: %12, %3
+// %1                                             // user: %5
+bb0(%0 : $*Int, %1 : $Int, %2 : $@thin Int.Type):
+  %3 = struct_element_addr %0, #Int._value        // user: %4
+  %4 = load %3                                    // user: %7
+  %5 = struct_extract %1, #Int._value             // user: %7
+  %6 = integer_literal $Builtin.Int1, -1          // user: %7
+  %7 = builtin "sadd_with_overflow_Int64"(%4, %5, %6) : $(Builtin.Int64, Builtin.Int1) // users: %9, %8
+  %8 = tuple_extract %7, 0                        // user: %11
+  %9 = tuple_extract %7, 1                        // user: %10
+  cond_fail %9, "arithmetic overflow"             // id: %10
+  %11 = struct $Int (%8)                          // user: %12
+  store %11 to %0                                 // id: %12
+  %13 = tuple ()                                  // user: %14
+  return %13                                      // id: %14
+} // end sil function '$sSi2peoiyySiz_SitFZ'
+
+// default argument 0 of Counter.AsyncIterator.init(current:limit:)
+// Isolation: unspecified
+sil hidden @$s16async_let_sample7CounterV13AsyncIteratorV7current5limitAESi_SitcfcfA_ : $@convention(thin) () -> Int {
+bb0:
+  %0 = integer_literal $Builtin.Int64, 0          // user: %1
+  %1 = struct $Int (%0)                           // user: %2
+  return %1                                       // id: %2
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorV7current5limitAESi_SitcfcfA_'
+
+// Counter.AsyncIterator.init(current:limit:)
+// Isolation: unspecified
+sil hidden @$s16async_let_sample7CounterV13AsyncIteratorV7current5limitAESi_SitcfC : $@convention(method) (Int, Int, @thin Counter.AsyncIterator.Type) -> Counter.AsyncIterator {
+// %0 "$implicit_value"                           // user: %3
+// %1 "$implicit_value"                           // user: %3
+// %2 "$metatype"
+bb0(%0 : $Int, %1 : $Int, %2 : $@thin Counter.AsyncIterator.Type):
+  %3 = struct $Counter.AsyncIterator (%0, %1)     // user: %4
+  return %3                                       // id: %4
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorV7current5limitAESi_SitcfC'
+
+// protocol witness for AsyncIteratorProtocol.next() in conformance Counter.AsyncIterator
+// Isolation: unspecified
+sil private [transparent] [thunk] @$s16async_let_sample7CounterV13AsyncIteratorVScIAAScI4next7ElementQzSgyYaKFTW : $@convention(witness_method: AsyncIteratorProtocol) @async (@inout Counter.AsyncIterator) -> (@out Optional<Int>, @error any Error) {
+// %0                                             // user: %4
+// %1                                             // user: %3
+bb0(%0 : $*Optional<Int>, %1 : $*Counter.AsyncIterator):
+  // function_ref Counter.AsyncIterator.next()
+  %2 = function_ref @$s16async_let_sample7CounterV13AsyncIteratorV4nextSiSgyYaF : $@convention(method) @async (@inout Counter.AsyncIterator) -> Optional<Int> // user: %3
+  %3 = apply %2(%1) : $@convention(method) @async (@inout Counter.AsyncIterator) -> Optional<Int> // user: %4
+  store %3 to %0                                  // id: %4
+  %5 = tuple ()                                   // user: %6
+  return %5                                       // id: %6
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorVScIAAScI4next7ElementQzSgyYaKFTW'
+
+// protocol witness for AsyncIteratorProtocol.next(isolation:) in conformance Counter.AsyncIterator
+// Isolation: actor_instance. name: 'actor'
+sil private [transparent] [thunk] @$s16async_let_sample7CounterV13AsyncIteratorVScIAAScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTW : $@convention(witness_method: AsyncIteratorProtocol) @async (@sil_isolated @guaranteed Optional<any Actor>, @inout Counter.AsyncIterator) -> (@out Optional<Int>, @error_indirect Never) {
+// %0                                             // user: %6
+// %1                                             // user: %12
+// %2                                             // user: %6
+// %3                                             // user: %6
+bb0(%0 : $*Optional<Int>, %1 : $*Never, %2 : $Optional<any Actor>, %3 : $*Counter.AsyncIterator):
+  // function_ref AsyncIteratorProtocol.next(isolation:)
+  %4 = function_ref @$sScIsE4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKF : $@convention(method) @async <τ_0_0 where τ_0_0 : AsyncIteratorProtocol> (@sil_isolated @guaranteed Optional<any Actor>, @inout τ_0_0) -> (@out Optional<τ_0_0.Element>, @error_indirect τ_0_0.Failure) // user: %6
+  %5 = alloc_stack $Never                         // users: %11, %9, %13, %6
+  try_apply %4<Counter.AsyncIterator>(%0, %5, %2, %3) : $@convention(method) @async <τ_0_0 where τ_0_0 : AsyncIteratorProtocol> (@sil_isolated @guaranteed Optional<any Actor>, @inout τ_0_0) -> (@out Optional<τ_0_0.Element>, @error_indirect τ_0_0.Failure), normal bb1, error bb2 // id: %6
+
+bb1(%7 : $()):                                    // Preds: bb0
+  %8 = tuple ()                                   // user: %10
+  dealloc_stack %5                                // id: %9
+  return %8                                       // id: %10
+
+bb2:                                              // Preds: bb0
+  %11 = load %5                                   // user: %12
+  store %11 to %1                                 // id: %12
+  dealloc_stack %5                                // id: %13
+  throw_addr                                      // id: %14
+} // end sil function '$s16async_let_sample7CounterV13AsyncIteratorVScIAAScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTW'
+
+// AsyncIteratorProtocol.next(isolation:)
+// Isolation: actor_instance. name: 'actor'
+sil [available 15.0] @$sScIsE4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKF : $@convention(method) @async <Self where Self : AsyncIteratorProtocol> (@sil_isolated @guaranteed Optional<any Actor>, @inout Self) -> (@out Optional<Self.Element>, @error_indirect Self.Failure)
+
+// Counter.makeAsyncIterator()
+// Isolation: unspecified
+sil hidden @$s16async_let_sample7CounterV17makeAsyncIteratorAC0fG0VyF : $@convention(method) (Counter) -> Counter.AsyncIterator {
+// %0 "self"                                      // users: %3, %1
+bb0(%0 : $Counter):
+  debug_value %0, let, name "self", argno 1       // id: %1
+  %2 = metatype $@thin Counter.AsyncIterator.Type // user: %7
+  %3 = struct_extract %0, #Counter.limit          // user: %7
+  // function_ref default argument 0 of Counter.AsyncIterator.init(current:limit:)
+  %4 = function_ref @$s16async_let_sample7CounterV13AsyncIteratorV7current5limitAESi_SitcfcfA_ : $@convention(thin) () -> Int // user: %5
+  %5 = apply %4() : $@convention(thin) () -> Int  // user: %7
+  // function_ref Counter.AsyncIterator.init(current:limit:)
+  %6 = function_ref @$s16async_let_sample7CounterV13AsyncIteratorV7current5limitAESi_SitcfC : $@convention(method) (Int, Int, @thin Counter.AsyncIterator.Type) -> Counter.AsyncIterator // user: %7
+  %7 = apply %6(%5, %3, %2) : $@convention(method) (Int, Int, @thin Counter.AsyncIterator.Type) -> Counter.AsyncIterator // user: %8
+  return %7                                       // id: %8
+} // end sil function '$s16async_let_sample7CounterV17makeAsyncIteratorAC0fG0VyF'
+
+// Counter.init(limit:)
+// Isolation: unspecified
+sil hidden @$s16async_let_sample7CounterV5limitACSi_tcfC : $@convention(method) (Int, @thin Counter.Type) -> Counter {
+// %0 "$implicit_value"                           // user: %2
+// %1 "$metatype"
+bb0(%0 : $Int, %1 : $@thin Counter.Type):
+  %2 = struct $Counter (%0)                       // user: %3
+  return %2                                       // id: %3
+} // end sil function '$s16async_let_sample7CounterV5limitACSi_tcfC'
+
+// protocol witness for AsyncSequence.makeAsyncIterator() in conformance Counter
+// Isolation: unspecified
+sil private [transparent] [thunk] @$s16async_let_sample7CounterVSciAASci17makeAsyncIterator0fG0QzyFTW : $@convention(witness_method: AsyncSequence) (@in Counter) -> @out Counter.AsyncIterator {
+// %0                                             // user: %5
+// %1                                             // user: %2
+bb0(%0 : $*Counter.AsyncIterator, %1 : $*Counter):
+  %2 = load %1                                    // user: %4
+  // function_ref Counter.makeAsyncIterator()
+  %3 = function_ref @$s16async_let_sample7CounterV17makeAsyncIteratorAC0fG0VyF : $@convention(method) (Counter) -> Counter.AsyncIterator // user: %4
+  %4 = apply %3(%2) : $@convention(method) (Counter) -> Counter.AsyncIterator // user: %5
+  store %4 to %0                                  // id: %5
+  %6 = tuple ()                                   // user: %7
+  return %6                                       // id: %7
+} // end sil function '$s16async_let_sample7CounterVSciAASci17makeAsyncIterator0fG0QzyFTW'
+
+// processSequence()
+// Isolation: unspecified
+sil hidden @$s16async_let_sample15processSequenceyyYaF : $@convention(thin) @async () -> () {
+bb0:
+  %0 = enum $Optional<Builtin.Executor>, #Optional.none!enumelt // users: %21, %51, %1
+  hop_to_executor %0                              // id: %1
+  %2 = alloc_stack [var_decl] $Counter.AsyncIterator, var, name "$number$generator", type $Counter.AsyncIterator // users: %10, %48, %14
+  %3 = metatype $@thin Counter.Type               // user: %7
+  %4 = integer_literal $Builtin.Int64, 5          // user: %5
+  %5 = struct $Int (%4)                           // user: %7
+  // function_ref Counter.init(limit:)
+  %6 = function_ref @$s16async_let_sample7CounterV5limitACSi_tcfC : $@convention(method) (Int, @thin Counter.Type) -> Counter // user: %7
+  %7 = apply %6(%5, %3) : $@convention(method) (Int, @thin Counter.Type) -> Counter // user: %9
+  // function_ref Counter.makeAsyncIterator()
+  %8 = function_ref @$s16async_let_sample7CounterV17makeAsyncIteratorAC0fG0VyF : $@convention(method) (Counter) -> Counter.AsyncIterator // user: %9
+  %9 = apply %8(%7) : $@convention(method) (Counter) -> Counter.AsyncIterator // user: %10
+  store %9 to %2                                  // id: %10
+  br bb1                                          // id: %11
+
+bb1:                                              // Preds: bb3 bb0
+  %12 = alloc_stack $Optional<Int>                // users: %22, %23, %17
+  %13 = enum $Optional<any Actor>, #Optional.none!enumelt // user: %17
+  %14 = begin_access [modify] [static] %2         // users: %52, %19, %17
+  // function_ref AsyncIteratorProtocol.next(isolation:)
+  %15 = function_ref @$sScIsE4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKF : $@convention(method) @async <τ_0_0 where τ_0_0 : AsyncIteratorProtocol> (@sil_isolated @guaranteed Optional<any Actor>, @inout τ_0_0) -> (@out Optional<τ_0_0.Element>, @error_indirect τ_0_0.Failure) // user: %17
+  %16 = alloc_stack $Never                        // users: %20, %17
+  try_apply %15<Counter.AsyncIterator>(%12, %16, %13, %14) : $@convention(method) @async <τ_0_0 where τ_0_0 : AsyncIteratorProtocol> (@sil_isolated @guaranteed Optional<any Actor>, @inout τ_0_0) -> (@out Optional<τ_0_0.Element>, @error_indirect τ_0_0.Failure), normal bb2, error bb5 // id: %17
+
+bb2(%18 : $()):                                   // Preds: bb1
+  end_access %14                                  // id: %19
+  dealloc_stack %16                               // id: %20
+  hop_to_executor %0                              // id: %21
+  %22 = load %12                                  // user: %24
+  dealloc_stack %12                               // id: %23
+  switch_enum %22, case #Optional.some!enumelt: bb3, case #Optional.none!enumelt: bb4 // id: %24
+
+// %25                                            // users: %35, %26
+bb3(%25 : $Int):                                  // Preds: bb2
+  debug_value %25, let, name "number"             // id: %26
+  %27 = integer_literal $Builtin.Word, 1          // user: %29
+  // function_ref _allocateUninitializedArray<A>(_:)
+  %28 = function_ref @$ss27_allocateUninitializedArrayySayxG_BptBwlF : $@convention(thin) <τ_0_0> (Builtin.Word) -> (@owned Array<τ_0_0>, Builtin.RawPointer) // user: %29
+  %29 = apply %28<Any>(%27) : $@convention(thin) <τ_0_0> (Builtin.Word) -> (@owned Array<τ_0_0>, Builtin.RawPointer) // users: %31, %30
+  %30 = tuple_extract %29, 0                      // users: %32, %37
+  %31 = tuple_extract %29, 1                      // user: %32
+  %32 = mark_dependence %31 on %30                // user: %33
+  %33 = pointer_to_address %32 to [strict] $*Any  // user: %34
+  %34 = init_existential_addr %33, $Int           // user: %35
+  store %25 to %34                                // id: %35
+  // function_ref _finalizeUninitializedArray<A>(_:)
+  %36 = function_ref @$ss27_finalizeUninitializedArrayySayxGABnlF : $@convention(thin) <τ_0_0> (@owned Array<τ_0_0>) -> @owned Array<τ_0_0> // user: %37
+  %37 = apply %36<Any>(%30) : $@convention(thin) <τ_0_0> (@owned Array<τ_0_0>) -> @owned Array<τ_0_0> // users: %46, %43
+  // function_ref default argument 1 of print(_:separator:terminator:)
+  %38 = function_ref @$ss5print_9separator10terminatoryypd_S2StFfA0_ : $@convention(thin) () -> @owned String // user: %39
+  %39 = apply %38() : $@convention(thin) () -> @owned String // users: %45, %43
+  // function_ref default argument 2 of print(_:separator:terminator:)
+  %40 = function_ref @$ss5print_9separator10terminatoryypd_S2StFfA1_ : $@convention(thin) () -> @owned String // user: %41
+  %41 = apply %40() : $@convention(thin) () -> @owned String // users: %44, %43
+  // function_ref print(_:separator:terminator:)
+  %42 = function_ref @$ss5print_9separator10terminatoryypd_S2StF : $@convention(thin) (@guaranteed Array<Any>, @guaranteed String, @guaranteed String) -> () // user: %43
+  %43 = apply %42(%37, %39, %41) : $@convention(thin) (@guaranteed Array<Any>, @guaranteed String, @guaranteed String) -> ()
+  release_value %41                               // id: %44
+  release_value %39                               // id: %45
+  release_value %37                               // id: %46
+  br bb1                                          // id: %47
+
+bb4:                                              // Preds: bb2
+  dealloc_stack %2                                // id: %48
+  %49 = tuple ()                                  // user: %50
+  return %49                                      // id: %50
+
+bb5:                                              // Preds: bb1
+  hop_to_executor %0                              // id: %51
+  end_access %14                                  // id: %52
+  unreachable                                     // id: %53
+} // end sil function '$s16async_let_sample15processSequenceyyYaF'
+
+// default argument 1 of print(_:separator:terminator:)
+// Isolation: unspecified
+sil shared @$ss5print_9separator10terminatoryypd_S2StFfA0_ : $@convention(thin) () -> @owned String {
+bb0:
+  %0 = string_literal utf8 " "                    // user: %5
+  %1 = integer_literal $Builtin.Word, 1           // user: %5
+  %2 = integer_literal $Builtin.Int1, -1          // user: %5
+  %3 = metatype $@thin String.Type                // user: %5
+  // function_ref String.init(_builtinStringLiteral:utf8CodeUnitCount:isASCII:)
+  %4 = function_ref @$sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %5
+  %5 = apply %4(%0, %1, %2, %3) : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %6
+  return %5                                       // id: %6
+} // end sil function '$ss5print_9separator10terminatoryypd_S2StFfA0_'
+
+// default argument 2 of print(_:separator:terminator:)
+// Isolation: unspecified
+sil shared @$ss5print_9separator10terminatoryypd_S2StFfA1_ : $@convention(thin) () -> @owned String {
+bb0:
+  %0 = string_literal utf8 "\n"                   // user: %5
+  %1 = integer_literal $Builtin.Word, 1           // user: %5
+  %2 = integer_literal $Builtin.Int1, -1          // user: %5
+  %3 = metatype $@thin String.Type                // user: %5
+  // function_ref String.init(_builtinStringLiteral:utf8CodeUnitCount:isASCII:)
+  %4 = function_ref @$sSS21_builtinStringLiteral17utf8CodeUnitCount7isASCIISSBp_BwBi1_tcfC : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %5
+  %5 = apply %4(%0, %1, %2, %3) : $@convention(method) (Builtin.RawPointer, Builtin.Word, Builtin.Int1, @thin String.Type) -> @owned String // user: %6
+  return %5                                       // id: %6
+} // end sil function '$ss5print_9separator10terminatoryypd_S2StFfA1_'
+
+// print(_:separator:terminator:)
+// Isolation: unspecified
+sil @$ss5print_9separator10terminatoryypd_S2StF : $@convention(thin) (@guaranteed Array<Any>, @guaranteed String, @guaranteed String) -> ()
+
+// Array._endMutation()
+sil shared [_semantics "array.end_mutation"] @$sSa12_endMutationyyF : $@convention(method) <Element> (@inout Array<Element>) -> () {
+[%0: noescape! **]
+// %0                                             // users: %9, %1
+bb0(%0 : $*Array<Element>):
+  %1 = struct_element_addr %0, #Array._buffer     // user: %2
+  %2 = struct_element_addr %1, #_ArrayBuffer._storage // user: %3
+  %3 = struct_element_addr %2, #_BridgeStorage.rawValue // user: %4
+  %4 = load %3                                    // user: %5
+  %5 = end_cow_mutation %4                        // user: %6
+  %6 = struct $_BridgeStorage<__ContiguousArrayStorageBase> (%5) // user: %7
+  %7 = struct $_ArrayBuffer<Element> (%6)         // user: %8
+  %8 = struct $Array<Element> (%7)                // user: %9
+  store %8 to %0                                  // id: %9
+  %10 = tuple ()                                  // user: %11
+  return %10                                      // id: %11
+} // end sil function '$sSa12_endMutationyyF'
+
+sil_witness_table hidden Counter.AsyncIterator: AsyncIteratorProtocol module async_let_sample {
+  associated_conformance (Failure: Error): Never: Error module Swift
+  associated_type Element: Int
+  associated_type Failure: Never
+  method #AsyncIteratorProtocol.next: <Self where Self : AsyncIteratorProtocol> (inout Self) -> () async throws -> Self.Element? : @$s16async_let_sample7CounterV13AsyncIteratorVScIAAScI4next7ElementQzSgyYaKFTW	// protocol witness for AsyncIteratorProtocol.next() in conformance Counter.AsyncIterator
+  method #AsyncIteratorProtocol.next: <Self where Self : AsyncIteratorProtocol> (inout Self) -> (isolated (any Actor)?) async throws(Self.Failure) -> Self.Element? : @$s16async_let_sample7CounterV13AsyncIteratorVScIAAScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTW	// protocol witness for AsyncIteratorProtocol.next(isolation:) in conformance Counter.AsyncIterator
+}
+
+sil_witness_table hidden Counter: AsyncSequence module async_let_sample {
+  associated_conformance (AsyncIterator: AsyncIteratorProtocol): Counter.AsyncIterator: AsyncIteratorProtocol module async_let_sample
+  associated_type AsyncIterator: Counter.AsyncIterator
+  associated_type Element: Int
+  associated_type Failure: Never
+  method #AsyncSequence.makeAsyncIterator: <Self where Self : AsyncSequence> (__owned Self) -> () -> Self.AsyncIterator : @$s16async_let_sample7CounterVSciAASci17makeAsyncIterator0fG0QzyFTW	// protocol witness for AsyncSequence.makeAsyncIterator() in conformance Counter
+}
+
+
+
+// Mappings from '#fileID' to '#filePath':
+//   'async_let_sample/async_let_sample.swift' => '/Users/joosung/project/ref/ios/swift/study_experiments/keywords/01_async_await/async_let_sample.swift'
+
+
